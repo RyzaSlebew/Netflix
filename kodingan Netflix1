@@ -177,3 +177,154 @@ def filmvip():
             print("Pilihan tidak valid. Silakan coba lagi.")
         
         print("\n")
+
+def filmbiasa():
+    def shell_sort(arr):
+        n = len(arr)
+        gap = n // 2
+        while gap > 0:
+            for i in range(gap, n):
+                temp = arr[i]
+                j = i
+                while j >= gap and arr[j - gap][0] > temp[0]:
+                    arr[j] = arr[j - gap]
+                    j -= gap
+                arr[j] = temp
+            gap //= 2
+        return arr
+
+    def jump_search(arr, x):
+        n = len(arr)
+        step = int(n ** 0.5)
+        prev = 0
+        while arr[min(step, n)-1][0] < x:
+            prev = step
+            step += int(n ** 0.5)
+            if prev >= n:
+                return -1
+        while arr[prev][0] < x:
+            prev += 1
+            if prev == min(step, n):
+                return -1
+        if arr[prev][0] == int(x):
+            return arr[prev]
+        return -1
+
+    cursor = mydb.cursor()
+    cursor.execute("SELECT * FROM filmbiasa")
+    result = cursor.fetchall()
+
+    if result:
+        sorted_result = shell_sort(result)
+        table = PrettyTable()
+        table.field_names = ["NO.Film","Judul","Tahun", "Rating"]
+        for row in sorted_result:
+            table.add_row(row)
+        print(table)
+
+        judul_film = input("Masukkan judul film yang ingin dicari: ")
+        query = f"SELECT * FROM filmbiasa WHERE Judul LIKE '%{judul_film}%'"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if result:
+            table = PrettyTable()
+            table.field_names = ["NO.Film","Judul","Tahun", "Rating"]
+            for row in result:
+                table.add_row(row)
+            print(table)
+        else:
+            print(f"Film dengan judul '{judul_film}' tidak ditemukan")
+    else:
+        print("Tidak dapat mencari film karena tidak ada data")
+
+def nonton_filmvip():
+    os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+
+    # Koneksi ke database
+    mydb = databaseakun()
+    cursor = mydb.cursor()
+
+    # Mengambil data film dari database
+    cursor.execute("SELECT * FROM filmvip")
+    movies = cursor.fetchall()
+    if not movies:
+        print("Tidak ada film yang tersedia saat ini.")
+        input("Tekan Enter untuk kembali ke menu...")
+        return
+
+    # Menampilkan daftar film setelah diurutkan dengan merge sort
+    movies = merge_sort(movies)
+    table = PrettyTable()
+    table.field_names = ["No", "Judul", "Tahun","Rating"]
+    for i, movie in enumerate(movies):
+        table.add_row([i+1, movie[1], movie[2], movie[3]])
+    print(table)
+
+    # Meminta input pilihan film
+    choice = input("Pilih film yang ingin ditonton (masukkan nomor): ")
+    while not choice.isnumeric() or int(choice) < 1 or int(choice) > len(movies):
+        print("Pilihan tidak valid. Silakan coba lagi.")
+        choice = input("Pilih film yang ingin ditonton (masukkan nomor): ")
+    chosen_movie = movies[int(choice)-1][1]
+    
+    # Membersihkan layar dan menampilkan pesan
+    os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+    print(f"Anda sedang menonton {chosen_movie}. Selamat menonton!")
+    input("Tekan Enter untuk kembali ke menu...")
+
+
+def nonton_filmbiasa():
+    os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+
+    # Koneksi ke database
+    mydb = databaseakun()
+    cursor = mydb.cursor()
+
+    # Mengambil data film dari database
+    cursor.execute("SELECT * FROM filmbiasa")
+    movies = cursor.fetchall()
+    if not movies:
+        print("Tidak ada film yang tersedia saat ini.")
+        input("Tekan Enter untuk kembali ke menu...")
+        return
+
+    # Menampilkan daftar film setelah diurutkan dengan merge sort
+    movies = merge_sort(movies)
+    table = PrettyTable()
+    table.field_names = ["No", "Judul", "Tahun","Rating"]
+    for i, movie in enumerate(movies):
+        table.add_row([i+1, movie[1], movie[2], movie[3]])
+    print(table)
+
+    # Meminta input pilihan film
+    choice = input("Pilih film yang ingin ditonton (masukkan nomor): ")
+    while not choice.isnumeric() or int(choice) < 1 or int(choice) > len(movies):
+        print("Pilihan tidak valid. Silakan coba lagi.")
+        choice = input("Pilih film yang ingin ditonton (masukkan nomor): ")
+    chosen_movie = movies[int(choice)-1][1]
+    
+    # Membersihkan layar dan menampilkan pesan
+    os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+    print(f"Anda sedang menonton {chosen_movie}. Selamat menonton!")
+    input("Tekan Enter untuk kembali ke menu...")
+
+
+def menu():
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+        print("Selamat datang di Netflix!")
+        print("1. Daftar film")
+        print("2. Nonton film")
+        print("3. Keluar")
+        choice = input("Masukkan pilihan: ")
+        if choice == "1":
+            filmvip()
+            input("Tekan Enter untuk kembali ke menu...")
+        elif choice == "2":
+            nonton_filmvip()
+        elif choice == "3":
+            print("Terima kasih telah menggunakan layanan Netflix!")
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+            input("Tekan Enter untuk kembali ke menu...")
