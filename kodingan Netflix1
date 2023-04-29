@@ -4,6 +4,8 @@ import mysql.connector
 import pymysql
 import math,os, time
 
+
+
 class Node:
     def __init__(self, data):
         self.data = data
@@ -307,7 +309,6 @@ def nonton_filmbiasa():
     os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
     print(f"Anda sedang menonton {chosen_movie}. Selamat menonton!")
     input("Tekan Enter untuk kembali ke menu...")
-
 
 def menu():
     while True:
