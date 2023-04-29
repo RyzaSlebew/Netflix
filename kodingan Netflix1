@@ -1,0 +1,179 @@
+from prettytable import PrettyTable
+from queue import Queue
+import mysql.connector
+import pymysql
+import math,os, time
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+
+        if self.head is None:
+            self.head = new_node
+            return
+
+        current_node = self.head
+        while current_node.next:
+            current_node = current_node.next
+
+        current_node.next = new_node
+
+    def __len__(self):
+        current_node = self.head
+        count = 0
+
+        while current_node:
+            count += 1
+            current_node = current_node.next
+
+        return count
+
+    def __getitem__(self, index):
+        if index < 0 or index >= len(self):
+            raise IndexError("Index out of range")
+
+        current_node = self.head
+        count = 0
+
+        while current_node:
+            if count == index:
+                return current_node.data
+            count += 1
+            current_node = current_node.next
+
+def databaseakun():
+    try:
+        mydb = None
+        mydb = mysql.connector.connect(
+        host="db4free.net",
+        user="kelompok4",
+        password="raihan123",
+        database="netflix4"
+        )
+        print("Database Terhubung")
+    except mysql.connector.Error as z:
+        print(f"Erorr: {z}")
+    return mydb
+
+def login():
+    while True:
+        userakun = input("Masukkan username: ")
+        passakun = input("Masukkan password: ")
+
+        # Query untuk login akun VIP
+        queryvip = "SELECT * FROM akun WHERE user = %s AND pass = %s"
+        valuevip = (userakun, passakun)
+        cursor = mydb.cursor()
+        cursor.execute(queryvip, valuevip)
+        resultvip = cursor.fetchone()
+
+        # Query untuk login akun biasa
+        querybiasa = "SELECT * FROM biasa WHERE user = %s AND pass = %s"
+        valuebiasa = (userakun, passakun)
+        cursor = mydb.cursor()
+        cursor.execute(querybiasa, valuebiasa)
+        resultbiasa = cursor.fetchone()
+
+        # Pengecekan hasil query dan tampilan pesan
+        if resultvip:
+            print("Login VIP berhasil")
+            time.sleep(2)
+            menu()
+            break
+        elif resultbiasa:
+            print("Login biasa berhasil")
+            time.sleep(2)
+            menu3()
+            break
+        else:
+            print("Login gagal")
+            time.sleep(2)
+            menu2()
+
+def merge_sort(arr, key=lambda x: x):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        left_half = arr[:mid]
+        right_half = arr[mid:]
+
+        merge_sort(left_half, key=key)
+        merge_sort(right_half, key=key)
+
+        i = j = k = 0
+
+        while i < len(left_half) and j < len(right_half):
+            if key(left_half[i]) < key(right_half[j]):
+                arr[k] = left_half[i]
+                i += 1
+            else:
+                arr[k] = right_half[j]
+                j += 1
+            k += 1
+
+        while i < len(left_half):
+            arr[k] = left_half[i]
+            i += 1
+            k += 1
+
+        while j < len(right_half):
+            arr[k] = right_half[j]
+            j += 1
+            k += 1
+
+    return arr
+
+def filmvip():
+    cursor = mydb.cursor()
+    cursor.execute("SELECT COUNT(*) FROM filmvip")
+    total_rows = cursor.fetchone()[0]
+
+    movies = LinkedList()
+
+    cursor.execute("SELECT * FROM filmvip")
+    for row in cursor.fetchall():
+        movies.append(row)
+
+    rows_per_page = 5
+    total_pages = (total_rows + rows_per_page - 1) // rows_per_page
+    
+    page = 1
+    while True:
+        offset = (page - 1) * rows_per_page
+        result = []
+
+        for i in range(offset, offset + rows_per_page):
+            try:
+                result.append(movies[i])
+            except IndexError:
+                pass
+
+        if result:
+            table = PrettyTable()
+            table.field_names = ["NO.Film","Judul","Tahun", "Rating"]
+            for row in result:
+                table.add_row(row)
+            print(table)
+        else:
+            print("Film tidak ada")
+        
+        print(f"Page {page} of {total_pages}")
+        if total_pages == 1:
+            break
+        
+        choice = input("Pilih halaman (1-4), atau tekan 'x' untuk keluar: ")
+        if choice == 'x':
+            break
+        elif choice.isnumeric() and 1 <= int(choice) <= 4:
+            page = int(choice)
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+        
+        print("\n")
