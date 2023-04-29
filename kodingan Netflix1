@@ -328,3 +328,42 @@ def menu():
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
             input("Tekan Enter untuk kembali ke menu...")
+def menu3():
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+        print("Selamat datang di Netflix!")
+        print("1. Daftar film")
+        print("2. Nonton film")
+        print("3. Keluar")
+        choice = input("Masukkan pilihan: ")
+        if choice == "1":
+            filmbiasa()
+            input("Tekan Enter untuk kembali ke menu...")
+        elif choice == "2":
+            nonton_filmbiasa()
+        elif choice == "3":
+            print("Terima kasih telah menggunakan layanan Netflix!")
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+            input("Tekan Enter untuk kembali ke menu...")
+
+def menu2():
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear') # membersihkan layar
+        print("Selamat datang di Netflix!")
+        print("1. Login")
+        print("2. Keluar")
+        choice = input("Masukkan pilihan: ")
+        if choice == "1":
+           login()
+        elif choice == "2":
+            print("Terima kasih telah menggunakan layanan Netflix!")
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+            input("Tekan Enter untuk kembali ke menu...")
+            
+mydb = databaseakun()
+
+menu2()
